@@ -6,10 +6,11 @@ import Config
 # to provide built-in test partitioning in CI environment.
 # Run `mix help test` for more information.
 config :phx_todo_api, PhxTodoApi.Repo,
-  username: "postgres",
-  password: "postgres",
+  username: "phx_todo_api",
+  password: "phx_todo_api",
   hostname: "localhost",
   database: "phx_todo_api_test#{System.get_env("MIX_TEST_PARTITION")}",
+  port: 2000,
   pool: Ecto.Adapters.SQL.Sandbox,
   pool_size: 10
 

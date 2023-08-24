@@ -7,6 +7,7 @@ defmodule PhxTodoApiWeb.Router do
 
   scope "/api", PhxTodoApiWeb do
     pipe_through :api
+    resources "/todos", TodoController, except: [:new, :edit]
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
