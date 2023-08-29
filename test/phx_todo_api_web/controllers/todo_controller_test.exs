@@ -79,9 +79,8 @@ defmodule PhxTodoApiWeb.TodoControllerTest do
       conn = delete(conn, ~p"/api/todos/#{todo}")
       assert response(conn, 204)
 
-      assert_error_sent 404, fn ->
-        get(conn, ~p"/api/todos/#{todo}")
-      end
+      conn = get(conn, ~p"/api/todos/#{todo}")
+      assert json_response(conn, 404)["errors"] != %{}
     end
   end
 

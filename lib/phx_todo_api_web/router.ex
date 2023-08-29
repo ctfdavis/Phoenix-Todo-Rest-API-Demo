@@ -5,8 +5,13 @@ defmodule PhxTodoApiWeb.Router do
     plug :accepts, ["json"]
   end
 
+  pipeline :auth do
+    plug PhxTodoApiWeb.Auth
+  end
+
   scope "/api", PhxTodoApiWeb do
     pipe_through :api
+    pipe_through :auth
     resources "/todos", TodoController, except: [:new, :edit]
   end
 
