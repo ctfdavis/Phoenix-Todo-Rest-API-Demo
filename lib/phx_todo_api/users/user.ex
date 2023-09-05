@@ -1,4 +1,4 @@
-defmodule PhxTodoApi.User do
+defmodule PhxTodoApi.Users.User do
   use Ecto.Schema
   import Ecto.Changeset
 
