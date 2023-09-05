@@ -9,3 +9,13 @@
 #
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
+
+PhxTodoApi.Repo.insert!(%PhxTodoApi.User{
+  email: "testuser@gmail.com",
+  password_hash: Argon2.hash_pwd_salt("password")
+})
+
+PhxTodoApi.Repo.insert!(%PhxTodoApi.User{
+  email: "testuser2@gmail.com",
+  password_hash: Argon2.hash_pwd_salt("password2")
+})

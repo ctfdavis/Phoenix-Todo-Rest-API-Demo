@@ -44,7 +44,8 @@ defmodule PhxTodoApi.MixProject do
       {:gettext, "~> 0.20"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
-      {:joken, "~> 2.5"}
+      {:joken, "~> 2.5"},
+      {:argon2_elixir, "~> 3.0"}
     ]
   end
 
