@@ -9,6 +9,10 @@ defmodule PhxTodoApiWeb.ErrorJSON do
     %{errors: %{detail: "Todo not found"}}
   end
 
+  def render("user_not_found.json", _assigns) do
+    %{errors: %{detail: "User not found"}}
+  end
+
   # By default, Phoenix returns the status message from
   # the template name. For example, "404.json" becomes
   # "Not Found".

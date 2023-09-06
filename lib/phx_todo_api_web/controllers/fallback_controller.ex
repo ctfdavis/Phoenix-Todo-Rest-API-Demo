@@ -28,4 +28,11 @@ defmodule PhxTodoApiWeb.FallbackController do
     |> put_view(json: PhxTodoApiWeb.ErrorJSON)
     |> render(:todo_not_found)
   end
+
+  def call(conn, {:error, :user_not_found}) do
+    conn
+    |> put_status(:not_found)
+    |> put_view(json: PhxTodoApiWeb.ErrorJSON)
+    |> render(:user_not_found)
+  end
 end

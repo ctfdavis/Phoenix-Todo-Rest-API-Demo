@@ -5,8 +5,12 @@ defmodule PhxTodoApi.Users do
 
   def get_user_by(queryable) do
     case Repo.get_by(User, queryable) do
-      nil -> {:error, :user_not_found}
+      nil -> user_not_found()
       user -> {:ok, user}
     end
+  end
+
+  def user_not_found do
+    {:error, :user_not_found}
   end
 end

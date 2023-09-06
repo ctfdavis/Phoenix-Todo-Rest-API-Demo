@@ -4,19 +4,19 @@ defmodule PhxTodoApiWeb.AuthController do
   alias PhxTodoApi.Users
   alias PhxTodoApi.Users.User
 
+  action_fallback PhxTodoApiWeb.FallbackController
+
   def login(conn, %{"username" => username, "password" => password}) do
-    # TODO: check that this user exists
-    # TODO: check that the plain password matches the hashed password
-    IO.puts("username: #{username}, password: #{password}")
+    with {:ok, %User{} = user} <- Users.get_user_by(email: username) do
+      if Argon2.verify_pass(password, user.password_hash) do
+        {:ok, token, _claims} = Token.generate_and_sign(%{"user_id" => user.id})
 
-    with {:ok, user} <- Users.get_user_by(email: username) do
+        conn
+        |> put_status(:ok)
+        |> render(:login, token: token)
+      else
+        Users.user_not_found()
+      end
     end
-
-    {:ok, token, claims} = Token.generate_and_sign()
-    Now
-
-    conn
-    |> put_status(:ok)
-    |> render(:login, token: token)
   end
 end
