@@ -8,6 +8,21 @@ defmodule PhxTodoApi.Todos do
 
   alias PhxTodoApi.Todos.Todo
 
+  def todo_not_found do
+    {:error, :todo_not_found}
+  end
+
+  def list_todos_by_user_id(user_id) do
+    Repo.all(from t in Todo, where: t.user_id == ^user_id)
+  end
+
+  def get_todo_by_id_and_user_id(id, user_id) do
+    case Repo.get_by(Todo, id: id, user_id: user_id) do
+      nil -> todo_not_found()
+      todo -> {:ok, todo}
+    end
+  end
+
   @doc """
   Returns the list of todos.
 

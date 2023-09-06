@@ -10,8 +10,11 @@ defmodule PhxTodoApiWeb.Auth do
     case get_req_header(conn, "authorization") do
       ["Bearer " <> token | _] ->
         case Token.verify_and_validate(token) do
-          {:ok, claims} -> conn |> assign(:current_user, claims)
-          _ -> handle_error(conn)
+          {:ok, claims} ->
+            conn |> assign(:user_id, claims["user_id"])
+
+          _ ->
+            handle_error(conn)
         end
 
       _ ->

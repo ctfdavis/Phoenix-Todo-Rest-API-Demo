@@ -15,8 +15,7 @@ defmodule PhxTodoApiWeb.Router do
   end
 
   scope "/api", PhxTodoApiWeb do
-    pipe_through :api
-    pipe_through :auth
+    pipe_through [:api, :auth]
     resources "/todos", TodoController, except: [:new, :edit]
   end
 

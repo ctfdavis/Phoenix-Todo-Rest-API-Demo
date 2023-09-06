@@ -66,4 +66,11 @@ config :phoenix, :plug_init_mode, :runtime
 # Disable swoosh api client as it is only required for production adapters.
 config :swoosh, :api_client, false
 
-config :joken, default_signer: "not_a_secret"
+config :joken,
+  default_signer: "not_a_secret",
+  default_claims: [
+    # 12 hours
+    default_exp: 60 * 60 * 12,
+    iss: "phx_todo_api",
+    aud: "phx_todo_api"
+  ]
