@@ -11,12 +11,16 @@ defmodule PhxTodoApiWeb.Router do
 
   scope "/api", PhxTodoApiWeb do
     pipe_through :api
-    post "/login", AuthController, :login
-  end
 
-  scope "/api", PhxTodoApiWeb do
-    pipe_through [:api, :auth]
-    resources "/todos", TodoController, except: [:new, :edit]
+    scope "" do
+      pipe_through :auth
+      resources "/todos", TodoController, except: [:new, :edit]
+    end
+
+    scope "/auth" do
+      post "/login", AuthController, :login
+      post "/register", AuthController, :register
+    end
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development

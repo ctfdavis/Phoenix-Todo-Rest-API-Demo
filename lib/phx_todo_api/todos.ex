@@ -8,7 +8,7 @@ defmodule PhxTodoApi.Todos do
 
   alias PhxTodoApi.Todos.Todo
 
-  def todo_not_found do
+  def error_todo_not_found do
     {:error, :todo_not_found}
   end
 
@@ -18,7 +18,7 @@ defmodule PhxTodoApi.Todos do
 
   def get_todo_by_id_and_user_id(id, user_id) do
     case Repo.get_by(Todo, id: id, user_id: user_id) do
-      nil -> todo_not_found()
+      nil -> error_todo_not_found()
       todo -> {:ok, todo}
     end
   end
