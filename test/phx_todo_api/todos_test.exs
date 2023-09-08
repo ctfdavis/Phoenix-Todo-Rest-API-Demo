@@ -2,12 +2,12 @@ defmodule PhxTodoApi.TodosTest do
   use PhxTodoApi.DataCase
 
   alias PhxTodoApi.Todos
+  alias PhxTodoApi.Todos.Todo
+
+  import PhxTodoApi.TodosFixtures
+  import PhxTodoApi.UsersFixtures
 
   describe "todos" do
-    alias PhxTodoApi.Todos.Todo
-
-    import PhxTodoApi.TodosFixtures
-
     @invalid_attrs %{name: nil, completed: nil, tags: nil}
 
     test "list_todos/0 returns all todos" do
@@ -21,7 +21,14 @@ defmodule PhxTodoApi.TodosTest do
     end
 
     test "create_todo/1 with valid data creates a todo" do
-      valid_attrs = %{name: "some name", completed: true, tags: ["option1", "option2"]}
+      user = user_fixture()
+
+      valid_attrs = %{
+        name: "some name",
+        completed: true,
+        tags: ["option1", "option2"],
+        user_id: user.id
+      }
 
       assert {:ok, %Todo{} = todo} = Todos.create_todo(valid_attrs)
       assert todo.name == "some name"

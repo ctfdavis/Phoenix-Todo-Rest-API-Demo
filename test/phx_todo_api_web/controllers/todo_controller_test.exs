@@ -2,8 +2,10 @@ defmodule PhxTodoApiWeb.TodoControllerTest do
   use PhxTodoApiWeb.ConnCase
 
   import PhxTodoApi.TodosFixtures
+  import PhxTodoApi.UsersFixtures
 
   alias PhxTodoApi.Todos.Todo
+  alias PhxTodoApiWeb.Token
 
   @create_attrs %{
     name: "some name",
@@ -18,11 +20,13 @@ defmodule PhxTodoApiWeb.TodoControllerTest do
   @invalid_attrs %{name: nil, completed: nil, tags: nil}
 
   setup %{conn: conn} do
-    {:ok, conn: put_req_header(conn, "accept", "application/json")}
+    result = create_todo(conn)
+    %{result | conn: put_req_header(result.conn, "accept", "application/json")}
   end
 
   describe "index" do
     test "lists all todos", %{conn: conn} do
+      conn = put_token_by_user_id(conn, user_fixture(%{email: "test_lists_todo@example.com"}).id)
       conn = get(conn, ~p"/api/todos")
       assert json_response(conn, 200)["data"] == []
     end
@@ -50,8 +54,6 @@ defmodule PhxTodoApiWeb.TodoControllerTest do
   end
 
   describe "update todo" do
-    setup [:create_todo]
-
     test "renders todo when data is valid", %{conn: conn, todo: %Todo{id: id} = todo} do
       conn = put(conn, ~p"/api/todos/#{todo}", todo: @update_attrs)
       assert %{"id" => ^id} = json_response(conn, 200)["data"]
@@ -73,8 +75,6 @@ defmodule PhxTodoApiWeb.TodoControllerTest do
   end
 
   describe "delete todo" do
-    setup [:create_todo]
-
     test "deletes chosen todo", %{conn: conn, todo: todo} do
       conn = delete(conn, ~p"/api/todos/#{todo}")
       assert response(conn, 204)
@@ -84,8 +84,22 @@ defmodule PhxTodoApiWeb.TodoControllerTest do
     end
   end
 
-  defp create_todo(_) do
-    todo = todo_fixture()
-    %{todo: todo}
+  defp create_todo(conn) do
+    user = user_fixture()
+    todo = todo_fixture(%{user_id: user.id})
+
+    %{
+      conn: put_token_by_user_id(conn, user.id),
+      todo: todo,
+      user: user
+    }
+  end
+
+  defp put_token_by_user_id(conn, user_id) do
+    put_req_header(
+      conn,
+      "authorization",
+      "Bearer #{Token.generate_and_sign!(%{"user_id" => user_id})}"
+    )
   end
 end

@@ -37,6 +37,15 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
+config :joken,
+  default_signer: "not_a_secret",
+  default_claims: [
+    # 12 hours
+    default_exp: 60 * 60 * 12,
+    iss: "phx_todo_api",
+    aud: "phx_todo_api"
+  ]
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"
