@@ -15,11 +15,11 @@
 - Authentication
   - Register
   - Account activation via email
-    - HEEX page for activation
+    - HEEX template for activation
   - Resend activation email
   - Sign in
   - Forget password
-    - HEEX page with form
+    - HEEX template with password reset form
 - Todos
   - Listing (optionally filter by tags)
   - CRUD
@@ -36,4 +36,4 @@ To start your Phoenix server:
 - Run `mix setup` to install and setup dependencies
 - Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser. The homepage contains links to the swagger ui and local mailbox for demo usages.
+Now you can visit [`localhost:4000`](http://localhost:4000) from your browser. The homepage contains links to the swagger ui and local mailbox for demo purposes.
