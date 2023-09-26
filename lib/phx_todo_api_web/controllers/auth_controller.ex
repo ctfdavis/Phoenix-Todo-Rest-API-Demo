@@ -196,26 +196,10 @@ defmodule PhxTodoApiWeb.AuthController do
           "token" => token
         } = reset_params
       ) do
-    with {:ok, user} <- validate_password_reset_token(token),
+    with {:ok, user} <- Auth.validate_password_reset_token(token),
          {:ok, _} <-
            Users.update_user(user, reset_params) do
       conn |> put_status(:ok) |> render(:reset_password)
-    end
-  end
-
-  def validate_password_reset_token(token) do
-    with {:ok, user} <- Auth.validate_password_reset_token(token),
-         {:ok, %{"iat" => iat} = _claims} <- Auth.peek_claims(token) do
-      case NaiveDateTime.compare(
-             user.updated_at,
-             iat |> DateTime.from_unix!() |> DateTime.to_naive()
-           ) do
-        :lt ->
-          {:ok, user}
-
-        _ ->
-          Errors.error_invalid_token()
-      end
     end
   end
 
