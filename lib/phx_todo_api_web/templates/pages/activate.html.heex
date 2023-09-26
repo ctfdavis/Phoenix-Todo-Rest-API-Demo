@@ -1,0 +1,9 @@
+<form id="auto-submit-form" action={~p"/api/auth/activate"} method="post" style="display: none;">
+  <input type="hidden" name="token" value={@token}>
+</form>
+
+<script>
+  window.onload = function() {
+    document.getElementById('auto-submit-form').submit();
+  }
+</script>

@@ -25,7 +25,10 @@ config :phx_todo_api, PhxTodoApiWeb.Endpoint,
   code_reloader: true,
   debug_errors: false,
   secret_key_base: "P31xfucASL3mnpVvZChhUR3LU0hGFSXiqCnqhCjcbYNuJs9ajvaiHp+UKTl5mTeW",
-  watchers: []
+  watchers: [
+    esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]},
+    tailwind: {Tailwind, :install_and_run, [:default, ~w(--watch)]}
+  ]
 
 # ## SSL Support
 #
@@ -65,3 +68,16 @@ config :phoenix, :plug_init_mode, :runtime
 
 # Disable swoosh api client as it is only required for production adapters.
 config :swoosh, :api_client, false
+
+config :open_api_spex, :cache_adapter, OpenApiSpex.Plug.NoneCache
+
+# Watch static and templates for browser reloading.
+config :phx_todo_api, PhxTodoApiWeb.Endpoint,
+  live_reload: [
+    patterns: [
+      ~r"priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$",
+      ~r"priv/gettext/.*(po)$",
+      ~r"lib/phx_todo_api_web/(controllers|templates)/.*(ex|heex)$",
+      ~r"lib/phx_todo_api_web/templates/layouts/.*(ex|heex)$"
+    ]
+  ]

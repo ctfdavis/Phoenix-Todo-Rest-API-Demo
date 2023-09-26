@@ -6,118 +6,72 @@ defmodule PhxTodoApi.Todos do
   import Ecto.Query, warn: false
   alias PhxTodoApi.Repo
 
+  alias PhxTodoApi.Tags
   alias PhxTodoApi.Todos.Todo
+  alias PhxTodoApi.Todos.Tags, as: TodoTags
+  require PhxTodoApi.Errors
+  alias PhxTodoApi.Errors
 
-  def error_todo_not_found do
-    {:error, :todo_not_found}
-  end
+  def list_todos_by_user_id_and_tag_ids(user_id, tag_ids) do
+    todo = Todo |> preload(:tags)
 
-  def list_todos_by_user_id(user_id) do
-    Repo.all(from t in Todo, where: t.user_id == ^user_id)
+    query =
+      if tag_ids == [] do
+        from t in todo,
+          where: t.user_id == ^user_id
+      else
+        from t in todo,
+          where:
+            t.user_id == ^user_id and
+              t.id in subquery(
+                from tt in TodoTags, where: tt.tag_id in ^tag_ids, select: tt.todo_id
+              )
+      end
+
+    Repo.all(query)
   end
 
   def get_todo_by_id_and_user_id(id, user_id) do
     case Repo.get_by(Todo, id: id, user_id: user_id) do
-      nil -> error_todo_not_found()
-      todo -> {:ok, todo}
+      nil -> Errors.error_todo_not_found()
+      todo -> {:ok, todo |> Repo.preload(:tags)}
     end
   end
 
-  @doc """
-  Returns the list of todos.
-
-  ## Examples
-
-      iex> list_todos()
-      [%Todo{}, ...]
-
-  """
   def list_todos do
-    Repo.all(Todo)
+    Repo.all(Todo |> preload(:tags))
   end
 
-  @doc """
-  Gets a single todo.
-
-  Returns {:error, :todo_not_found} if the Todo does not exist.
-
-  ## Examples
-
-      iex> get_todo(123)
-      {:ok, %Todo{}}
-
-      iex> get_todo!(456)
-      {:error, :todo_not_found}
-
-  """
   def get_todo(id) do
     case Repo.get(Todo, id) do
-      nil -> {:error, :todo_not_found}
-      todo -> {:ok, todo}
+      nil -> Errors.error_todo_not_found()
+      todo -> {:ok, todo |> Repo.preload(:tags)}
     end
   end
 
-  @doc """
-  Creates a todo.
+  def create_todo(%{"user_id" => user_id} = attrs \\ %{}) do
+    {tags, attrs} = Map.pop(attrs, "tags", [])
 
-  ## Examples
+    changeset =
+      %Todo{}
+      |> Todo.changeset(attrs)
+      |> Ecto.Changeset.put_assoc(:tags, Tags.get_tags_by_ids_and_user_id(tags, user_id))
 
-      iex> create_todo(%{field: value})
-      {:ok, %Todo{}}
-
-      iex> create_todo(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def create_todo(attrs \\ %{}) do
-    %Todo{}
-    |> Todo.changeset(attrs)
-    |> Repo.insert()
+    with {:ok, todo} <- Repo.insert(changeset) do
+      {:ok, todo |> Repo.preload(:tags)}
+    end
   end
 
-  @doc """
-  Updates a todo.
-
-  ## Examples
-
-      iex> update_todo(todo, %{field: new_value})
-      {:ok, %Todo{}}
-
-      iex> update_todo(todo, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
   def update_todo(%Todo{} = todo, attrs) do
     todo
     |> Todo.changeset(attrs)
     |> Repo.update()
   end
 
-  @doc """
-  Deletes a todo.
-
-  ## Examples
-
-      iex> delete_todo(todo)
-      {:ok, %Todo{}}
-
-      iex> delete_todo(todo)
-      {:error, %Ecto.Changeset{}}
-
-  """
   def delete_todo(%Todo{} = todo) do
     Repo.delete(todo)
   end
 
-  @doc """
-  Returns an `%Ecto.Changeset{}` for tracking todo changes.
-
-  ## Examples
-
-      iex> change_todo(todo)
-      %Ecto.Changeset{data: %Todo{}}
-
-  """
   def change_todo(%Todo{} = todo, attrs \\ %{}) do
     Todo.changeset(todo, attrs)
   end
